@@ -19,11 +19,12 @@ Rails.application.routes.draw do
 
   resources :registries, :except => [:show]
 
-  scope :foreman_docker, :path => '/docker' do
+  # scope :foreman_docker, :path => '' do
     namespace :api, :defaults => { :format => 'json' } do
       scope "(:apiv)", :module => :v2, :defaults => { :apiv => 'v2'}, :apiv => /v2/,
         :constraints => ApiConstraints.new(:version => 2) do
-        resources :containers, :container => 'foreman_docker/api/v2/containers', :only => [:index, :create, :show, :destroy] do
+
+        resources :containers, :only => [:index, :create, :show, :destroy] do
           member do
             get :log
             put :power
@@ -31,5 +32,5 @@ Rails.application.routes.draw do
         end
       end
     end
-  end
+  # end
 end

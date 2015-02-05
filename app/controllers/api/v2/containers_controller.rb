@@ -1,4 +1,4 @@
-module ForemanDocker
+# module ForemanDocker
   module Api
     module V2
       class ContainersController < ::Api::V2::BaseController
@@ -7,7 +7,7 @@ module ForemanDocker
         resource_description do
           resource_id 'containers'
           api_version 'v2'
-          api_base_url '/docker/api/v2'
+          api_base_url '/api/v2'
         end
 
         api :GET, '/containers/', N_('List all containers')
@@ -18,6 +18,7 @@ module ForemanDocker
 
         def index
           @containers = Container.all
+          # binding.pry
         end
 
         api :GET, '/containers/:id/', N_('Show a container')
@@ -86,4 +87,4 @@ module ForemanDocker
       end
     end
   end
-end
+# end
