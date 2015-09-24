@@ -4,10 +4,7 @@ class Container < ActiveRecord::Base
 
   belongs_to :compute_resource
   belongs_to :registry, :class_name => "DockerRegistry", :foreign_key => :registry_id
-  has_many :environment_variables, :dependent  => :destroy, :foreign_key => :reference_id,
-                                   :inverse_of => :container,
-                                   :class_name => 'EnvironmentVariable',
-                                   :validate => false
+  has_many :environment_variables, :dependent  => :destroy, :foreign_key => :reference_id, :inverse_of => :container, :class_name => 'EnvironmentVariable', validate: false
   accepts_nested_attributes_for :environment_variables, :allow_destroy => true
   include ForemanDocker::ParameterValidators
 
@@ -32,9 +29,11 @@ class Container < ActiveRecord::Base
   validates :name, :uniqueness => { :scope => :compute_resource_id }
 
   def repository_pull_url
-    repo = tag.blank? ? repository_name : "#{repository_name}:#{tag}"
-    repo = registry.prefixed_url(repo) if registry
-    repo
+    if true 
+      repo = tag.blank? ? repository_name : "#{repository_name}:#{tag}"
+      repo = registry.prefixed_url(repo) if registry
+      repo
+    end
   end
 
   def parametrize
