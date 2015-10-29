@@ -20,7 +20,7 @@ module Api
         if params[:compute_resource_id].present?
           scoped = Container.where(:compute_resource_id => params[:compute_resource_id])
         else
-          scoped = Container.scoped
+          scoped = Container.all
         end
         @containers = scoped.search_for(params[:search], :order => params[:order])
                       .paginate(:page => params[:page])
@@ -37,7 +37,7 @@ module Api
 
       def_param_group :container do
         param :container, Hash, :required => true, :action_aware => true do
-          param :name, String, :required => true
+          param :name, String
           param_group :taxonomies, ::Api::V2::BaseController
           param :compute_resource_id, :identifier, :required => true
           param :registry_id, :identifier, :desc => N_('Registry this container will have to
@@ -52,7 +52,7 @@ module Api
           param :command, String, :required => true
           param :memory, String
           param :cpu_shares, :number
-          param :cpu_sets, String
+          param :cpu_set, String
           param :environment_variables, Hash
           param :attach_stdout, :bool
           param :attach_stdin, :bool
@@ -69,9 +69,17 @@ module Api
       param_group :container, :as => :create
 
       def create
-        @container = Service::Containers.new.start_container!(set_wizard_state)
-        set_container_taxonomies
-        process_response @container.save
+        service = Service::Containers.new
+        @container = service.start_container!(set_wizard_state)
+        if service.errors.any?
+          render :json => { :errors => service.errors,
+                            :full_messages => service.full_messages
+                          },
+                 :status => :unprocessable_entity
+        else
+          set_container_taxonomies
+          process_response @container.save
+        end
       rescue ActiveModel::MassAssignmentSecurity::Error => e
         render :json => { :error  => _("Wrong attributes: %s") % e.message },
                :status => :unprocessable_entity

@@ -3,6 +3,10 @@ class DockerRegistry < ActiveRecord::Base
   include Taxonomix
   include Encryptable
 
+  self.primary_key = 'id'
+
+  attr_accessible :name, :url, :username, :password, :locations, :organizations
+
   has_many :containers, :foreign_key => "registry_id", :dependent => :destroy
   encrypts :password
 

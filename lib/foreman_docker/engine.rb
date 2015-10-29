@@ -1,6 +1,5 @@
 require 'fast_gettext'
 require 'gettext_i18n_rails'
-require 'fog'
 require 'fog/fogdocker'
 require 'wicked'
 require 'docker'
@@ -81,11 +80,17 @@ module ForemanDocker
         end
 
         security_block :registries do
-          permission :view_registries, { :registries => [:index, :show] },
+          permission :view_registries,
+                     { :registries => [:index, :show],
+                       :'api/v2/registries' => [:index, :show] },
                      :resource_type => 'DockerRegistry'
-          permission :create_registries, { :registries  => [:new, :create, :update, :edit] },
+          permission :create_registries,
+                     { :registries  => [:new, :create, :update, :edit],
+                       :'api/v2/registries' => [:create, :update] },
                      :resource_type => 'DockerRegistry'
-          permission :destroy_registries, { :registries => [:destroy] },
+          permission :destroy_registries,
+                     { :registries => [:destroy],
+                       :'api/v2/registries' => [:destroy] },
                      :resource_type => 'DockerRegistry'
         end
 
