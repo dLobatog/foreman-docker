@@ -158,7 +158,13 @@ module ForemanDocker
       opts[:docker_username] = user if user.present?
       opts[:docker_password] = password if password.present?
       opts[:docker_email] = email if email.present?
+      binding.pry
       @client ||= ::Fog::Compute.new(opts)
+    rescue Fog::Errors::Error => e
+      logger.debug "Fog error: #{e.message}\n " + e.backtrace.join("\n ")
+      raise ::Foreman::Exception.new(
+        N_('Error connecting to Docker. Please check your credentials and try again: %s'),
+        e.message)
     end
 
     def credentials

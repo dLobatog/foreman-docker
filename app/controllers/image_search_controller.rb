@@ -64,6 +64,7 @@ class ImageSearchController < ::ApplicationController
   end
 
   def use_hub?
+    binding.pry
     @registry.nil?
   end
 
@@ -101,9 +102,15 @@ class ImageSearchController < ::ApplicationController
   end
 
   def registry_auto_complete_image_tags(terms)
-    ::Service::RegistryApi.new(:url => @registry.url,
-                               :user => @registry.username,
-                               :password => @registry.password).list_repository_tags(terms).keys
+    tags = ::Service::RegistryApi.new(:url => @registry.url,
+                                      :user => @registry.username,
+                                      :password => @registry.password).
+                                      list_repository_tags(terms)
+    if tags.is_a? Array
+      tags.map { |tag| tag['name'] }
+    else
+      tags.keys
+    end
   end
 
   def registry_search_image(terms)
